@@ -4,7 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 const LoginScreen = ({ navigation }) => {
   const handleLogin = () => {
+    navigation.navigate("Main");
   };
+
 
   return (
     <View style={styles.container}>

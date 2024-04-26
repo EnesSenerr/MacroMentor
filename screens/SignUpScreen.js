@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 const SignUpScreen = ({ navigation }) => {
   const handleRegister = () => {
-    // Kayıt işlemleri burada gerçekleştirilecek
   };
 
   return (
