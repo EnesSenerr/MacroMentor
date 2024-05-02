@@ -38,7 +38,7 @@ const Navbar = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.navItem}
-        // onPress={() => navigation.navigate("Profile")} // Profil sayfasına git
+         onPress={() => navigation.navigate("Profile")} // Profil sayfasına git
       >
         <Ionicons name="person-outline" size={24} color="black" />
         <Text style={styles.navText}>Profil</Text>

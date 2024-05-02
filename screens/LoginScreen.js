@@ -2,8 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
-const LoginScreen = ({ navigation }) => {
+
+const LoginScreen = ({ navigation, onLogin }) => {
   const handleLogin = () => {
+    onLogin();
     navigation.navigate("Main");
   };
 

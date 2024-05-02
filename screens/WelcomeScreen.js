@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Linking, Image, Animated } from "react-native";
 
-const WelcomeScreen = ({ navigation }) => {
+const WelcomeScreen = ({ navigation, onLogin }) => {
   const [scaleValue] = useState(new Animated.Value(1));
 
   const handleLogin = () => {
+    onLogin();
     navigation.navigate("Login");
   };
 
