@@ -5,7 +5,6 @@ const WelcomeScreen = ({ navigation, onLogin }) => {
   const [scaleValue] = useState(new Animated.Value(1));
 
   const handleLogin = () => {
-    onLogin();
     navigation.navigate("Login");
   };
 
