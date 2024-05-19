@@ -1,55 +1,47 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
+import db from './firebaseConfig';
 
-const LoginScreen = ({ navigation }) => {
-  const [recentlySearched, setRecentlySearched] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+const MainScreen = ({ navigation }) => {
+  const [foods, setFoods] = useState([]);
 
-  const handleSearch = () => {
-    if (searchQuery.trim() === "") {
-      return;
-    }
+  useEffect(() => {
+    // Firestore'dan yiyecek verilerini al
+    const fetchFoods = async () => {
+      try {
+        const querySnapshot = await db.collection('foods').get();
+        const fetchedFoods = [];
+        querySnapshot.forEach((doc) => {
+          fetchedFoods.push({ id: doc.id, ...doc.data() });
+        });
+        setFoods(fetchedFoods);
+      } catch (error) {
+        console.error('Error fetching foods:', error);
+      }
+    };
 
-    // Arama sonucunu recentlySearched listesine ekleyelim
-    const updatedRecentlySearched = [searchQuery, ...recentlySearched.slice(0, 6)];
-    setRecentlySearched(updatedRecentlySearched);
-  };
+    fetchFoods();
+  }, []);
+
+  const renderFoodItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.foodItem}
+      onPress={() => navigation.navigate('FoodDetail', { foodId: item.id })}
+    >
+      <Text style={styles.foodName}>{item.name}</Text>
+      <Text style={styles.foodCategory}>{item.category}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
-      {/* Başlık */}
-      <Text style={styles.title}>Sağlıklı Beslenme Uygulaması</Text>
-
-      {/* Arama kısmı */}
-      <View style={styles.searchContainer}>
-        {/* Arama kutusu */}
-        <View style={styles.inputContainer}>
-          {/* Arama ikonu */}
-          <Ionicons name="search-outline" size={24} color="black" />
-          {/* Arama metni kutusu */}
-          <TextInput
-            style={styles.input}
-            placeholder="Arama yapın..."
-            onChangeText={(text) => setSearchQuery(text)}
-            value={searchQuery}
-          />
-        </View>
-        {/* Arama düğmesi */}
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-          <Text style={styles.searchButtonText}>Ara</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Son aranan yiyecekler */}
-      <ScrollView style={styles.recentlySearchedContainer}>
-        <Text style={styles.recentlySearchedTitle}>Son Aranan Yiyecekler</Text>
-        {recentlySearched.map((food, index) => (
-          <TouchableOpacity key={index} style={styles.recentlySearchedItem}>
-            <Text style={styles.recentlySearchedText}>{food}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <Text style={styles.title}>Foods</Text>
+      <FlatList
+        data={foods}
+        renderItem={renderFoodItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
     </View>
   );
 };
@@ -66,55 +58,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
   },
-  searchContainer: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    flex: 1,
-  },
-  input: {
-    flex: 1,
-    marginLeft: 10,
-    fontSize: 16,
-  },
-  searchButton: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 10,
-    marginLeft: 10,
-  },
-  searchButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  recentlySearchedContainer: {
-    flex: 1,
-  },
-  recentlySearchedTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  recentlySearchedItem: {
+  foodItem: {
     backgroundColor: "#f2f2f2",
     paddingVertical: 10,
     paddingHorizontal: 15,
     marginBottom: 10,
     borderRadius: 10,
   },
-  recentlySearchedText: {
+  foodName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  foodCategory: {
     fontSize: 16,
+    color: "#555",
   },
 });
 
-export default LoginScreen;
+export default MainScreen;

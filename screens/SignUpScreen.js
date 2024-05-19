@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from '@firebase/auth';
 import { initializeApp } from '@firebase/app';
-import { doc, setDoc, collection } from 'firebase/firestore';
-import { getFirestore } from 'firebase/firestore';
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyD7CIrHeRUl9t_hS9C-YNzdVu-b0d0-_hA",
@@ -17,73 +14,39 @@ const firebaseConfig = {
   measurementId: "G-0FD5P6TPFG"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore();
 
 const SignUpScreen = ({ navigation }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-//şifre e-posta kontrolü
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const handleRegister = async () => {
     try {
-      if (password.length < 6) {
-        Alert.alert("Geçersiz Şifre", "Şifreniz en az 6 karakter olmalıdır.");
-        return;
+      // Şifrelerin aynı olup olmadığını kontrol etme
+      if (password !== confirmPassword) {
+        throw new Error("Girilen şifreler eşleşmiyor.");
       }
 
+      // Firebase'e kullanıcıyı kaydetme
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      await createUserDocument(user.uid, {
-        firstName: firstName,
-        lastName: lastName,
-        phone: phone
-      });
 
       console.log("Kullanıcı kaydedildi:", user.uid);
+
+      // Başarılı kayıt sonrası işlemler
       navigation.navigate("Login");
+      Alert.alert("Başarılı", "Kayıt işlemi başarıyla tamamlandı. Lütfen giriş yapın.");
     } catch (error) {
       Alert.alert("Kayıt Hatası", error.message);
     }
   };
-//firestore belge kontrolü
-  const createUserDocument = async (userId, userData) => {
-    try {
-      await setDoc(doc(collection(db, "users"), userId), userData);
-      console.log("Kullanıcı belgesi oluşturuldu:", userId);
-    } catch (error) {
-      console.error("Kullanıcı belgesi oluşturulamadı:", error);
-    }
-  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="chevron-back-outline" size={24} color="black" />
-      </TouchableOpacity>
       <Text style={styles.title}>Kayıt Ol</Text>
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Ad"
-          value={firstName}
-          onChangeText={(text) => setFirstName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Soyad"
-          value={lastName}
-          onChangeText={(text) => setLastName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Telefon No"
-          value={phone}
-          onChangeText={(text) => setPhone(text)}
-        />
         <TextInput
           style={styles.input}
           placeholder="E-posta"
@@ -99,6 +62,13 @@ const SignUpScreen = ({ navigation }) => {
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Şifreyi Onayla"
+          secureTextEntry={true}
+          value={confirmPassword}
+          onChangeText={(text) => setConfirmPassword(text)}
+        />
       </View>
       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerButtonText}>Kayıt Ol</Text>
@@ -113,12 +83,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-  },
-  goBackButton: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    zIndex: 1,
   },
   title: {
     fontSize: 24,
@@ -141,8 +105,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
   },
   registerButtonText: {
     color: "#ffffff",

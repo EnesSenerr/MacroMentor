@@ -8,9 +8,8 @@ import MainScreen from './screens/MainScreen';
 import FoodScreen from './screens/FoodScreen';
 import Navbar from './components/Navbar';
 import ProfileScreen from './screens/ProfileScreen';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from '@firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from '@firebase/auth';
 import { initializeApp } from '@firebase/app';
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyD7CIrHeRUl9t_hS9C-YNzdVu-b0d0-_hA",
@@ -23,6 +22,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -48,7 +49,9 @@ export default function App() {
         <Stack.Screen name="Login">
           {props => <LoginScreen {...props} onLogin={handleLogin} />}
         </Stack.Screen>
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="SignUp">
+          {props => <SignUpScreen {...props} onLogin={handleLogin} />}
+        </Stack.Screen>
         <Stack.Screen name="Main" component={MainScreen} />
         <Stack.Screen name="Besin" component={FoodScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
