@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -8,26 +8,31 @@ import MainScreen from './screens/MainScreen';
 import FoodScreen from './screens/FoodScreen';
 import Navbar from './components/Navbar';
 import ProfileScreen from './screens/ProfileScreen';
-import { getAuth, createUserWithEmailAndPassword } from '@firebase/auth';
-import { initializeApp } from '@firebase/app';
+import { getAuth } from '@firebase/auth';
+import { app } from './screens/firebaseConfig';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD7CIrHeRUl9t_hS9C-YNzdVu-b0d0-_hA",
-  authDomain: "macromentor-bcd7b.firebaseapp.com",
-  projectId: "macromentor-bcd7b",
-  storageBucket: "macromentor-bcd7b.appspot.com",
-  messagingSenderId: "447252129233",
-  appId: "1:447252129233:web:ecb7d04f56327866e1ecf0",
-  measurementId: "G-0FD5P6TPFG"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 const Stack = createStackNavigator();
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Firebase Authentication'ı başlat
+  useEffect(() => {
+    const auth = getAuth(app);
+    // Kullanıcı oturum açma durumunu kontrol et
+    
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setIsLoggedIn(true); // Kullanıcı oturum açtıysa
+      } else {
+        setIsLoggedIn(false); // Kullanıcı oturumu kapattıysa
+      }
+    });
+
+    // Aboneliği temizle
+    return () => unsubscribe();
+  }, []);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -36,7 +41,7 @@ export default function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
   };
-
+// sayfalar arası yönlendirme kısımları , navbar kontrolü
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -55,6 +60,7 @@ export default function App() {
         <Stack.Screen name="Main" component={MainScreen} />
         <Stack.Screen name="Besin" component={FoodScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+      
       </Stack.Navigator>
       {isLoggedIn && <Navbar onLogout={handleLogout} />}
     </NavigationContainer>

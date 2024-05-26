@@ -5,16 +5,15 @@ import { Ionicons } from '@expo/vector-icons';
 const FoodScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [recentlySearched, setRecentlySearched] = useState([]);
-
+ // Arama işlemlerinin yapılacagı kısım
+    // searchQuery kullanarak besinleri ara, diziye ekle
   const handleSearch = () => {
-    // Arama işlemleri burada yapılacak
-    // searchQuery kullanarak yemekleri ara
-    // Sonuçları recentlySearched dizisine ekle
+   
   };
-
-  const handleFoodSelect = (food) => {
-    // Besine tıklandığında çalışacak işlemler burada yapılacak
+ // Besine tıklandığında çalışacak işlemler burada yapılacak
     // Seçilen besine özel bir kısım açılacak
+  const handleFoodSelect = (food) => {
+   
   };
 
   return (

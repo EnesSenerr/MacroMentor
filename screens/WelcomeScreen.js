@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Linking, Ima
 
 const WelcomeScreen = ({ navigation, onLogin }) => {
   const [scaleValue] = useState(new Animated.Value(1));
-
+//sayfa yönlendirmeleri
   const handleLogin = () => {
     navigation.navigate("Login");
   };
@@ -13,11 +13,9 @@ const WelcomeScreen = ({ navigation, onLogin }) => {
   };
 
   const handleFeedback = () => {
-    // Geri bildirim formu sayfasına yönlendirme
-    // navigation.navigate("Feedback");
     Linking.openURL("https://deneme.com");
   };
-
+//github logosu için animasyon fonksiyonları
   const animateButton = () => {
     Animated.timing(scaleValue, {
       toValue: 2.5,

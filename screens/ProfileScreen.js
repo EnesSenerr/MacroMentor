@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Text, TextInput , Keyboard, KeyboardAvoidingView, ScrollView} from "react-native";
 
 const BMRCalculatorScreen = () => {
-  const [gender, setGender] = useState(""); // Cinsiyet: "Erkek" veya "Kadın"
+  const [gender, setGender] = useState(""); // Cinsiyet
   const [weight, setWeight] = useState(""); // Kilo (kg)
   const [height, setHeight] = useState(""); // Boy (cm)
   const [age, setAge] = useState(""); // Yaş
@@ -57,9 +57,9 @@ const BMRCalculatorScreen = () => {
     const fatMass = weight - leanBodyMass;
   
     // Protein, karbonhidrat ve yağ miktarlarını hesapla
-    const proteinGrams = leanBodyMass * 2.2; // Protein ihtiyacı yağsız vücut kütlesine dayanır
-    const fatGrams = (dailyCalories * 0.25) / 9; // Günde alınması gereken yağ miktarı
-    const carbohydrateGrams = (dailyCalories - (proteinGrams * 4 + fatGrams * 9)) / 4; // Geriye kalan kaloriler karbonhidratlardan gelir
+    const proteinGrams = leanBodyMass * 2.2;
+    const fatGrams = (dailyCalories * 0.25) / 9;
+    const carbohydrateGrams = (dailyCalories - (proteinGrams * 4 + fatGrams * 9)) / 4;
   
     // Sonucu ayarla
     setResult(

@@ -13,7 +13,6 @@ const firebaseConfig = {
   appId: "1:447252129233:web:ecb7d04f56327866e1ecf0",
   measurementId: "G-0FD5P6TPFG"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -32,7 +31,7 @@ const SignUpScreen = ({ navigation }) => {
       // Firebase'e kullanıcıyı kaydetme
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+// konsoldan kullanıcı kayıt durumunu ve id sini takip etme
       console.log("Kullanıcı kaydedildi:", user.uid);
 
       // Başarılı kayıt sonrası işlemler

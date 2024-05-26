@@ -1,37 +1,30 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
-
-const auth = getAuth();
+import { auth } from "./firebaseConfig";
+import { signInWithEmailAndPassword } from '@firebase/auth';
 
 const LoginScreen = ({ navigation, onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+//Gerekli kontroller
   const handleLogin = async () => {
     try {
-      // E-posta ve şifrenin boş olup olmadığını kontrol etme
       if (!email || !password) {
         throw new Error("Lütfen e-posta ve şifrenizi girin.");
       }
 
-      // Şifrenin en az 6 karakterden oluştuğunu kontrol etme
       if (password.length < 6) {
         throw new Error("Şifreniz en az 6 karakter olmalıdır.");
       }
 
-      // Firebase üzerinden kullanıcı girişi
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
       console.log("Kullanıcı giriş yaptı:", user.uid);
-
-      // Başarılı giriş sonrası işlemler
       onLogin();
       navigation.navigate("Main");
     } catch (error) {
-      // Hata türüne göre uygun mesajı gösterme
       if (error.code === "auth/wrong-password") {
         Alert.alert("Giriş Hatası", "Şifreniz yanlış. Lütfen tekrar deneyin.");
       } else if (error.code === "auth/user-not-found") {
