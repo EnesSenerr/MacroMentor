@@ -10,6 +10,8 @@ import Navbar from './components/Navbar';
 import ProfileScreen from './screens/ProfileScreen';
 import { getAuth } from '@firebase/auth';
 import { app } from './screens/firebaseConfig';
+import FoodRepiceScreen from './screens/FoodRepiceScreen';
+import ProfileInfoScreen from './screens/ProfileInfoScreen';
 
 
 const Stack = createStackNavigator();
@@ -60,6 +62,8 @@ export default function App() {
         <Stack.Screen name="Main" component={MainScreen} />
         <Stack.Screen name="Besin" component={FoodScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="YemekTarifleri" component={FoodRepiceScreen} />
+        <Stack.Screen name="ProfileInfo" component={ProfileInfoScreen} />
       
       </Stack.Navigator>
       {isLoggedIn && <Navbar onLogout={handleLogout} />}

@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
-import { collection, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage';
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { getDocs, collection } from 'firebase/firestore';
 import { db, storage } from './firebaseConfig';
+import { ref, getDownloadURL } from 'firebase/storage';
+import { useNavigation } from '@react-navigation/native';
 
 const MainScreen = () => {
-  const [foods, setFoods] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [recipes, setRecipes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [favoriteFoods, setFavoriteFoods] = useState([]);
-  const [recentlySearchedFoods, setRecentlySearchedFoods] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchFoods = async () => {
+    const fetchRecipes = async () => {
       try {
-        const foodsRef = collection(db, 'foods');
-        const querySnapshot = await getDocs(foodsRef);
-        const foodsList = await Promise.all(
+        const recipesRef = collection(db, 'recipes');
+        const querySnapshot = await getDocs(recipesRef);
+        const recipesList = await Promise.all(
           querySnapshot.docs.map(async (doc) => {
             const data = doc.data();
             let imageUrl = '';
@@ -31,175 +30,121 @@ const MainScreen = () => {
             };
           })
         );
-        setFoods(foodsList);
-        setIsLoading(false); // Veri yükleme tamamlandığında yükleniyor durumunu kapat
+        setRecipes(recipesList);
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching foods: ", error);
+        console.error("Error fetching recipes: ", error);
       }
     };
 
-    fetchFoods();
+    fetchRecipes();
   }, []);
 
-  const filteredFoods = searchTerm.trim() === '' ? [] : foods.filter(food =>
-    food.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const addToFavorite = async (foodId) => {
-    try {
-      const foodDocRef = doc(db, 'foods', foodId);
-      await updateDoc(foodDocRef, {
-        favorites: arrayUnion(foodId),
-      });
-      // Favoriye eklenen besini favori listesine ekle
-      const favoriteFood = foods.find(food => food.id === foodId);
-      setFavoriteFoods(prevFavorites => [...prevFavorites, favoriteFood]);
-    } catch (error) {
-      console.error("Error adding to favorites: ", error);
-    }
+  const navigateToRecipe = (recipeId) => {
+    navigation.navigate('RecipeDetail', { recipeId });
   };
-
-  const renderFoodItem = ({ item }) => {
-    const { type, name, calori, protein, imageUrl } = item;
-
-    return (
-      <View style={styles.foodItem}>
-        {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.foodImage} />
-        ) : null}
-        <Text style={styles.foodName}>{name}</Text>
-        <Text style={styles.foodType}>{type}</Text>
-        <Text style={styles.foodDetails}>Kalori: {calori}</Text>
-        <Text style={styles.foodDetails}>Protein: {protein} gr</Text>
-        <TouchableOpacity onPress={() => addToFavorite(item.id)}>
-          <Text style={styles.addToFavoriteButton}>Favorilere Ekle</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const renderFavoriteItem = ({ item }) => {
-    const { name, type, calori, protein, imageUrl } = item;
-
-    return (
-      <TouchableOpacity style={styles.favoriteItem} onPress={() => console.log(item)}>
-        {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.favoriteImage} />
-        ) : null}
-      </TouchableOpacity>
-    );
-  };
-
+//şimdilik text ama ilerde databaseden alıcak.
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Besinler</Text>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Arama..."
-        onChangeText={text => setSearchTerm(text)}
-        value={searchTerm}
-      />
-      {isLoading ? (
-        <Text style={styles.loadingText}>Yükleniyor...</Text>
-      ) : filteredFoods.length === 0 ? (
-        <Text style={styles.noResultText}>Arama sonucu bulunamadı.</Text>
-      ) : (
-        <FlatList
-          data={filteredFoods}
-          renderItem={renderFoodItem}
-          keyExtractor={item => item.id}
-        />
-      )}
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Sağlıklı Beslenme</Text>
+      </View>
 
-      <Text style={styles.sectionTitle}>Favori Besinler</Text>
-      <FlatList
-        data={favoriteFoods}
-        renderItem={renderFavoriteItem}
-        keyExtractor={item => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      />
-    </View>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Günlük Kalori Hedefi</Text>
+        <View style={styles.calorieCard}>
+          <Text style={styles.calorieText}>2000 kcal</Text>
+          <Text style={styles.calorieSubText}>Bugünkü Hedefiniz</Text>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Popüler Tarifler</Text>
+        {isLoading ? (
+          <Text style={styles.loadingText}>Yükleniyor...</Text>
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {recipes.map((recipe) => (
+              <TouchableOpacity key={recipe.id} style={styles.recipeCard} onPress={() => navigateToRecipe(recipe.id)}>
+                <Image source={{ uri: recipe.imageUrl }} style={styles.recipeImage} />
+                <Text style={styles.recipeName}>{recipe.id}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Favori Tarifler</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {/* Favori tarifler burada gösterilecek */}
+        </ScrollView>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 24,
+  header: {
+    padding: 20,
+    backgroundColor: '#6FCF97',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    color: '#fff',
   },
-  foodItem: {
-    backgroundColor: '#f2f2f2',
-    padding: 20,
-    marginBottom: 20,
-    borderRadius: 10,
+  section: {
+    marginTop: 20,
+    paddingHorizontal: 20,
   },
-  foodImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
     marginBottom: 10,
-  },
-  foodName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 5,
     color: '#333',
   },
-  foodType: {
-    fontSize: 18,
+  calorieCard: {
+    backgroundColor: '#FFEB3B',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  calorieText: {
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#666',
+    color: '#333',
   },
-  foodDetails: {
+  calorieSubText: {
     fontSize: 16,
-    color: '#888',
-  },
-  searchInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    color: '#666',
   },
   loadingText: {
     fontSize: 18,
     textAlign: 'center',
-    marginTop: 20,
+    color: '#666',
   },
-  noResultText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 20,
-    color: 'red',
-  },
-  addToFavoriteButton: {
-    fontSize: 16,
-    color: 'blue',
-    marginTop: 5,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  favoriteItem: {
-    marginRight: 10,
+  recipeCard: {
+    backgroundColor: '#f2f2f2',
     borderRadius: 10,
+    marginRight: 10,
     width: 150,
-    height: 150,
     overflow: 'hidden',
   },
-  favoriteImage: {
+  recipeImage: {
     width: '100%',
-    height: '100%',
+    height: 100,
+  },
+  recipeName: {
+    padding: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
   },
 });
 

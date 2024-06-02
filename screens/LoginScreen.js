@@ -23,7 +23,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
 
       console.log("Kullanıcı giriş yaptı:", user.uid);
       onLogin();
-      navigation.navigate("Main");
+      navigation.navigate("ProfileInfo");
     } catch (error) {
       if (error.code === "auth/wrong-password") {
         Alert.alert("Giriş Hatası", "Şifreniz yanlış. Lütfen tekrar deneyin.");
