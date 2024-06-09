@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { auth } from "./firebaseConfig";
-import { signInWithEmailAndPassword } from '@firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from '@firebase/auth';
 
 const LoginScreen = ({ navigation, onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-//Gerekli kontroller
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+
   const handleLogin = async () => {
     try {
       if (!email || !password) {
@@ -23,7 +25,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
 
       console.log("Kullanıcı giriş yaptı:", user.uid);
       onLogin();
-      navigation.navigate("ProfileInfo");
+      navigation.navigate("Main");
     } catch (error) {
       if (error.code === "auth/wrong-password") {
         Alert.alert("Giriş Hatası", "Şifreniz yanlış. Lütfen tekrar deneyin.");
@@ -34,6 +36,22 @@ const LoginScreen = ({ navigation, onLogin }) => {
       } else {
         Alert.alert("Giriş Hatası", error.message);
       }
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!forgotPasswordEmail) {
+      Alert.alert("E-posta Gerekli", "Lütfen şifrenizi sıfırlamak için e-posta adresinizi girin.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, forgotPasswordEmail);
+      Alert.alert("Şifre Sıfırlama", "Şifre sıfırlama e-postası gönderildi.");
+      setIsModalVisible(false);
+      setForgotPasswordEmail("");
+    } catch (error) {
+      Alert.alert("Hata", error.message);
     }
   };
 
@@ -63,6 +81,37 @@ const LoginScreen = ({ navigation, onLogin }) => {
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Giriş Yap</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.forgotPasswordButton} onPress={() => setIsModalVisible(true)}>
+        <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
+      </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => {
+          setIsModalVisible(!isModalVisible);
+        }}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitle}>Şifre Sıfırlama</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="E-posta"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={forgotPasswordEmail}
+            onChangeText={(text) => setForgotPasswordEmail(text)}
+          />
+          <TouchableOpacity style={styles.modalButton} onPress={handleForgotPassword}>
+            <Text style={styles.modalButtonText}>Şifre Sıfırla</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
+            <Text style={styles.modalButtonText}>İptal</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -103,6 +152,37 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   loginButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  forgotPasswordButton: {
+    marginTop: 10,
+  },
+  forgotPasswordText: {
+    color: 'blue',
+    textAlign: 'center',
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#ffffff",
+  },
+  modalButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  modalButtonText: {
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",

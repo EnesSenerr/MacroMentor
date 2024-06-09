@@ -31,13 +31,6 @@ const Navbar = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.navItem}
-        // onPress={() => navigation.navigate("Chat")} // Sohbet sayfasına git
-      >
-        <Ionicons name="chatbubble-outline" size={24} color="black" />
-        <Text style={styles.navText}>Sohbet</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.navItem}
          onPress={() => navigation.navigate("Profile")} // Profil sayfasına git
       >
         <Ionicons name="person-outline" size={24} color="black" />
