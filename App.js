@@ -15,6 +15,9 @@ import BMRCalculatorScreen from './screens/BMRCalculatorScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import RecipeDetail from './screens/RecipeDetailScreen';
 import RecipeDetailScreen from './screens/RecipeDetailScreen';
+import AddFoodForm from './screens/AddFoodForm';
+import AddFoodScreen from './screens/AddFoodForm';
+import AddRecipeScreen from './screens/AddRecipeScreen';
 
 
 const Stack = createStackNavigator();
@@ -69,6 +72,8 @@ export default function App() {
         <Stack.Screen name="ProfileInfo" component={ProfileInfoScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="RecipeDetail" component={RecipeDetail}/>
+        <Stack.Screen name="Foodadd" component={AddFoodScreen}/>
+        <Stack.Screen name="FoodRepiceadd" component={AddRecipeScreen}/>
       </Stack.Navigator>
       {isLoggedIn && <Navbar onLogout={handleLogout} />}
     </NavigationContainer>

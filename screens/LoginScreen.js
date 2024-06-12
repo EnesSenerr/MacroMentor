@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity,  Alert, Modal, ImageBackground, Image, KeyboardAvoidingView } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { auth } from "./firebaseConfig";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from '@firebase/auth';
+import { SafeAreaView } from 'react-native';
 
 const LoginScreen = ({ navigation, onLogin }) => {
   const [email, setEmail] = useState("");
@@ -56,136 +57,181 @@ const LoginScreen = ({ navigation, onLogin }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="chevron-back-outline" size={24} color="black" />
-      </TouchableOpacity>
-      <Text style={styles.title}>Giriş Yap</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="E-posta"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Şifre"
-          secureTextEntry={true}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-      </View>
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Giriş Yap</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.forgotPasswordButton} onPress={() => setIsModalVisible(true)}>
-        <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
-      </TouchableOpacity>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={() => {
-          setIsModalVisible(!isModalVisible);
-        }}
+    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <ImageBackground
+        source={require("../assets/images/background.jpg")}
+        style={styles.background}
       >
-        <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Şifre Sıfırlama</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="E-posta"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={forgotPasswordEmail}
-            onChangeText={(text) => setForgotPasswordEmail(text)}
-          />
-          <TouchableOpacity style={styles.modalButton} onPress={handleForgotPassword}>
-            <Text style={styles.modalButtonText}>Şifre Sıfırla</Text>
+        <Image
+          source={require("../assets/images/MacroMentorLogo.png")}
+          style={styles.logo}
+        />
+
+        <View style={[styles.card, styles.semiTransparentBackground]}>
+          <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="chevron-back-outline" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
-            <Text style={styles.modalButtonText}>İptal</Text>
+          <Text style={styles.title}>Giriş Yap</Text>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="E-posta"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Şifre"
+              secureTextEntry={true}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+          </View>
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Giriş Yap</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.forgotPasswordButton} onPress={() => setIsModalVisible(true)}>
+            <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
+          </TouchableOpacity>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => {
+              setIsModalVisible(!isModalVisible);
+            }}
+          >
+            <View style={styles.modalView}>
+              <Text style={styles.modalTitle}>Şifre Sıfırlama</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="E-posta"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={forgotPasswordEmail}
+                onChangeText={(text) => setForgotPasswordEmail(text)}
+              />
+              <TouchableOpacity style={styles.modalButton} onPress={handleForgotPassword}>
+                <Text style={styles.modalButtonText}>Şifre Sıfırla</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.modalButtonText}>İptal</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
         </View>
-      </Modal>
-    </View>
+      </ImageBackground>
+    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  background: {
+    flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.15)", 
+  },
+  logo: {
+    width: 270,
+    top: -50,
+    opacity: 0.78
+  },
+  card: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)", // Arka plan opaklığı artırıldı
+    padding: 30,
+    borderRadius: 10,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   goBackButton: {
     position: "absolute",
-    top: 20,
+    top: 10,
     left: 20,
     zIndex: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#333", // Daha koyu yazı rengi
+    textAlign: "center",
   },
   inputContainer: {
-    width: "100%",
     marginBottom: 20,
   },
   input: {
-    backgroundColor: "#f2f2f2",
-    padding: 10,
+    backgroundColor: "rgba(255, 255, 255, 1)", // Beyaz arka plan
+    padding: 15,
     marginBottom: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     width: "100%",
+    color: "black",
   },
   loginButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#2196F3",
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 5,
+    borderRadius: 10,
+    alignSelf: "center", // Butonu ortala
   },
   loginButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
+    color: "white",
+    fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
   },
   forgotPasswordButton: {
     marginTop: 10,
   },
   forgotPasswordText: {
-    color: 'blue',
+    color: '#2196F3', // Buton rengiyle aynı
     textAlign: 'center',
   },
   modalView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 20,
-    color: "#ffffff",
+    marginBottom: 10,
+    color: "#fff",
+    textAlign: 'center',
   },
   modalButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#2196F3", // Buton rengiyle aynı
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 10,
+    borderRadius: 10,
+    marginVertical: 5,
+    width: "100%",
   },
   modalButtonText: {
-    color: "#ffffff",
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+    textAlign: 'center',
   },
 });
 

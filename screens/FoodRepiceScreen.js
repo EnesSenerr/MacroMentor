@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, View, Image, TextInput, TouchableOpacity } 
 import { collection, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './firebaseConfig';
+import { SafeAreaView } from 'react-native';
 
 const RecipeScreen = () => {
   const [recipes, setRecipes] = useState([]);
@@ -88,6 +89,7 @@ const RecipeScreen = () => {
   };
 
   return (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <Text style={styles.title}>Yemek Tarifleri</Text>
       <TextInput
@@ -117,6 +119,7 @@ const RecipeScreen = () => {
         showsHorizontalScrollIndicator={false}
       />
     </View>
+    </SafeAreaView>
   );
 };
 

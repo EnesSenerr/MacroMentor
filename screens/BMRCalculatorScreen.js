@@ -67,7 +67,10 @@ const BMRCalculatorScreen = ({ navigation }) => {
     const proteinGrams = leanBodyMass * 2.2;
     const fatGrams = (dailyCalories * 0.25) / 9;
     const carbohydrateGrams = (dailyCalories - (proteinGrams * 4 + fatGrams * 9)) / 4;
-
+    const roundedDailyCalories = Math.round(dailyCalories);
+    const roundedProteinGrams = Math.round(proteinGrams);
+    const roundedFatGrams = Math.round(fatGrams);
+    const roundedCarbohydrateGrams = Math.round(carbohydrateGrams);
     // Sonuçları Firestore'a kaydet
     try {
       const user = auth.currentUser;
@@ -81,10 +84,10 @@ const BMRCalculatorScreen = ({ navigation }) => {
           goal,
           bodyFat: parseFloat(bodyFat) || 0, // Vücut yağı boşsa 0 olarak kaydet
           BMR,
-          dailyCalories,
-          proteinGrams,
-          carbohydrateGrams,
-          fatGrams,
+          dailyCalories: roundedDailyCalories,
+          proteinGrams: roundedProteinGrams,
+          fatGrams: roundedFatGrams,
+          carbohydrateGrams: roundedCarbohydrateGrams,
           photoURL
         }, { merge: true }); // Var olan diğer verileri koru
 

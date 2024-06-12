@@ -3,14 +3,12 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Alert } fr
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth, storage, firestore } from "./firebaseConfig";
-import BMRCalculatorScreen from "./BMRCalculatorScreen";
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ProfileScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const [showBMRCalculator, setShowBMRCalculator] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -37,16 +35,22 @@ const ProfileScreen = ({ navigation }) => {
   const handleSignOut = async () => {
     try {
       await auth.signOut();
-      navigation.navigate("Welcome"); // Çıkış yapınca WelcomeScreen'e git
+      navigation.navigate("Welcome");
     } catch (error) {
       console.error("Sign out error:", error);
     }
   };
-
+  
   const handleBMRPress = () => {
-    setShowBMRCalculator(true);
+    navigation.navigate('BMRCalculator');
   };
-
+  const handleFoodAddPress = () => {
+    navigation.navigate('Foodadd');
+  };
+  const handleFoodRepiceAddPress = () => {
+    navigation.navigate('FoodRepiceadd');
+  };
+  
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -65,7 +69,7 @@ const ProfileScreen = ({ navigation }) => {
             await updateDoc(userDocRef, {
               photoURL: uploadUrl,
             });
-            // Update the state with the new photoURL
+            // Durumu yeni photoURL ile güncelleyelim
             setUserData(prevData => ({ ...prevData, photoURL: uploadUrl }));
             Alert.alert("Başarılı", "Profil fotoğrafınız güncellendi.");
           }
@@ -79,20 +83,20 @@ const ProfileScreen = ({ navigation }) => {
 
   const uploadImageAsync = async (uri) => {
     try {
-      // Fetch the image and convert it to a blob
+      // Görüntüyü getirip ve bir blob'a dönüştürüyoruz
       const response = await fetch(uri);
       const blob = await response.blob();
 
-      // Get the current user
+      // Geçerli kullanıcıyı al
       const user = auth.currentUser;
       if (user) {
-        // Firebase Storage reference
+        
         const storageRef = ref(storage, `profilePictures/${user.uid}.jpg`);
-        // Upload the blob to Firebase Storage
+        
         await uploadBytes(storageRef, blob);
-        // Close the blob
+        
         blob.close();
-        // Get the download URL
+        
         const downloadURL = await getDownloadURL(storageRef);
         return downloadURL;
       } else {
@@ -161,10 +165,6 @@ const ProfileScreen = ({ navigation }) => {
                   <View style={styles.divider} />
                   <Text style={styles.sectionTitle}>BMR Sonuçları</Text>
                   <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>BMR:</Text>
-                    <Text style={styles.infoValue}>{userData.BMR.toFixed(2)} kcal</Text>
-                  </View>
-                  <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>Günlük Kalori:</Text>
                     <Text style={styles.infoValue}>{userData.dailyCalories.toFixed(2)} kcal</Text>
                   </View>
@@ -187,18 +187,29 @@ const ProfileScreen = ({ navigation }) => {
             <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
               <Text style={styles.signOutButtonText}>Çıkış Yap</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.bmrButton} onPress={handleBMRPress}>
+              <Text style={styles.bmrButtonText}>BMR Güncelle</Text>
+            </TouchableOpacity>
+            {userData.role === 'admin' && ( // role === 'admin' ise butonları göster
+              <>
+                <TouchableOpacity style={styles.bmrButton} onPress={handleFoodAddPress}>
+                  <Text style={styles.bmrButtonText}>Besin Ekle</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.bmrButton} onPress={handleFoodRepiceAddPress}>
+                  <Text style={styles.bmrButtonText}>Yemek Tarifi Ekle</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         ) : (
           <Text>Yükleniyor...</Text>
-        )}
-
-        {showBMRCalculator && (
-          <BMRCalculatorScreen />
         )}
       </View>
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -213,7 +224,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileContainer: {
-    alignItems: 'center', // Değişiklik burada
+    alignItems: 'center',
     width: '100%',
   },
   profileImage: {
@@ -301,5 +312,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-    
-    export default ProfileScreen;
+
+export default ProfileScreen;

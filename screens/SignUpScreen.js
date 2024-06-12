@@ -57,11 +57,12 @@ const SignUpScreen = ({ navigation }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Save additional user data in Firestore
+      //kullanıcı veilerini firestore a kaydetme
       await setDoc(doc(firestore, "users", user.uid), {
         firstName,
         lastName,
         phoneNumber,
+        role:"user",
       });
 
       Alert.alert("Başarılı", "Kayıt başarılı!");

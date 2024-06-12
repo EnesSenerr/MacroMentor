@@ -48,7 +48,7 @@ const WelcomeScreen = ({ navigation, onLogin }) => {
           style={styles.logo}
         />
         <View style={styles.overlay} />
-        <Text style={styles.title}>Hoş Geldiniz!</Text>
+        <Text style={styles.title}>MacroMentor'e Hoş Geldiniz!</Text>
         <Text style={styles.description}>
           Uygulamamıza hoş geldiniz. Hedeflerinize ulaşmak için makro besinlerinizi kolayca takip edin.
         </Text>
@@ -114,16 +114,19 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0)",
+    
+
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: "900",
     marginBottom: 20,
     color: "#FFFFFF",
   },
   description: {
     fontSize: 18,
+    fontWeight:"900",
     textAlign: "center",
     marginHorizontal: 30,
     marginBottom: 20,
@@ -143,7 +146,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   button: {
-    backgroundColor: "rgba(192,192,192,0.5)",
+    backgroundColor: "rgba(74,128,77,0.8)",
     paddingVertical: 15,
     borderRadius: 10,
     marginBottom: 10,
@@ -151,7 +154,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -171,7 +174,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   logo: {
-    width: 270
+    top: -50,
+    width: 270,
+    opacity: 0.78
   },
 });
 

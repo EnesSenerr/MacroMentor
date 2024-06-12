@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "deneme-4",
-    "slug": "deneme-4",
+    "name": "MacroMentor",
+    "slug": "MacroMentor",
     "sdkVersion": "51.0.0",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,6 +19,7 @@
       "supportsTablet": true
     },
     "android": {
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
